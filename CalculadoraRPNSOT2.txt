@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+#define MAX 100
+
+double stack[MAX];
+int top = 0;
+
+void push(double value) {
+    if (top < MAX) {
+        stack[top++] = value;
+    } else {
+        printf("Error: Pila llena\n");
+    }
+}
+
+double pop() {
+    if (top > 0) {
+        return stack[--top];
+    } else {
+        printf("Error: Pila vacía\n");
+        return 0;
+    }
+}
+
+void printStack() {
+    printf("\n--- PILA ---\n");
+    for (int i = top - 1; i >= 0; i--) {
+        printf("%g\n", stack[i]);
+    }
+    printf("------------\n");
+}
+
+int main() {
+    char input[50];
+    double a, b;
+
+    printf("Calculadora RPN (escribe 'exit' para salir)\n");
+    printf("Operadores soportados: + - * / pow sqrt sin cos tan log ln\n\n");
+
+    while (1) {
+        printStack();
+        printf("> ");
+        scanf("%s", input);
+
+        if (strcmp(input, "exit") == 0) break;
+
+        // Si es número
+        char *endptr;
+        double num = strtod(input, &endptr);
+        if (*endptr == '\0') {
+            push(num);
+            continue;
+        }
+
+        // Operaciones binarias
+        if (strcmp(input, "+") == 0) {
+            if (top < 2) { printf("Error: se necesitan 2 operandos\n"); continue; }
+            b = pop(); a = pop();
+            push(a + b);
+        } 
+        else if (strcmp(input, "-") == 0) {
+            if (top < 2) { printf("Error: se necesitan 2 operandos\n"); continue; }
+            b = pop(); a = pop();
+            push(a - b);
+        } 
+        else if (strcmp(input, "*") == 0) {
+            if (top < 2) { printf("Error: se necesitan 2 operandos\n"); continue; }
+            b = pop(); a = pop();
+            push(a * b);
+        } 
+        else if (strcmp(input, "/") == 0) {
+            if (top < 2) { printf("Error: se necesitan 2 operandos\n"); continue; }
+            b = pop(); a = pop();
+            if (b != 0) push(a / b);
+            else printf("Error: División por cero\n");
+        }
+        else if (strcmp(input, "pow") == 0) {
+            if (top < 2) { printf("Error: se necesitan 2 operandos\n"); continue; }
+            b = pop(); a = pop();
+            push(pow(a, b));
+        }
+
+        // Operaciones unarias
+        else if (strcmp(input, "sqrt") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            if (a >= 0) push(sqrt(a));
+            else printf("Error: Raíz negativa\n");
+        }
+        else if (strcmp(input, "sin") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            push(sin(a));
+        }
+        else if (strcmp(input, "cos") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            push(cos(a));
+        }
+        else if (strcmp(input, "tan") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            push(tan(a));
+        }
+        else if (strcmp(input, "log") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            if (a > 0) push(log10(a));
+            else printf("Error: log de número no positivo\n");
+        }
+        else if (strcmp(input, "ln") == 0) {
+            if (top < 1) { printf("Error: se necesita 1 operando\n"); continue; }
+            a = pop();
+            if (a > 0) push(log(a));
+            else printf("Error: ln de número no positivo\n");
+        }
+        else {
+            printf("Comando no reconocido\n");
+        }
+    }
+
+    return 0;
+}
